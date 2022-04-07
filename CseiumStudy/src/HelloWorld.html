@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cesium Start</title>
+    <script src="../lib/Cesium/Cesium.js"></script>
+    <link href="../lib/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+
+    <style>
+        html,
+        body{
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    <script>
+        //Viewer第一个参数容器就是需要上面的div容器承载
+        var viewer = new Cesium.Viewer('cesiumContainer');
+        viewer.terrainProvider = Cesium.createWorldTerrain();
+        // viewer.imageryLayers.remove(viewer.imageryLayers.get(0))
+        var provider = new Cesium.WebMapServiceImageryProvider({
+            url:'http://localhost:8080/geoserver/test/wms',
+            layers: 'test:jiuzaigou',
+              parameters: {
+              service : 'WMS',
+                  format: 'image/png',
+                  srs: 'EPSG:4326',
+                  transparent: true,
+              }
+
+        });
+
+        viewer.imageryLayers.addImageryProvider(provider); 
+
+        viewer.camera.setView({
+            destination:Cesium.Cartesian3.fromDegrees(104.14,33.16,200000.0),
+        })
+    </script>
+</body>
+</html>

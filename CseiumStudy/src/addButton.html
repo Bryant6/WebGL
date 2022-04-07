@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cesium Start</title>
+    <script src="../lib/Cesium/Cesium.js"></script>
+    <link href="../lib/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+
+    <style>
+        html,
+        body{
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .addButton1{
+            -webkit-appearance: none;
+            background: rgb(245,245,245);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+            border-style: solid;
+            box-shadow: rgba(0,0,0,0.2) 0px 4px 16px 0px;
+            position: fixed;
+            left: 60px;
+            top: 3px;
+            padding: 10px;
+        }
+
+        .addButton2{
+            -webkit-appearance: none;
+            background: rgb(245,245,245);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+            border-style: solid;
+            box-shadow: rgba(0,0,0,0.2) 0px 4px 16px 0px;
+            position: fixed;
+            left: 180px;
+            top: 3px;
+            padding: 10px;
+        }
+
+        .removeButton1{
+            -webkit-appearance: none;
+            background: rgb(245,245,245);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+            border-style: solid;
+            box-shadow: rgba(0,0,0,0.2) 0px 4px 16px 0px;
+            position: fixed;
+            left: 60px;
+            top: 75px;
+            padding: 10px;
+        }
+
+        .removeButton2{
+            -webkit-appearance: none;
+            background: rgb(245,245,245);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+            border-style: solid;
+            box-shadow: rgba(0,0,0,0.2) 0px 4px 16px 0px;
+            position: fixed;
+            left: 180px;
+            top: 75px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body onload="init();">
+    <div id="cesiumContainer"></div>
+    <button class="addButton1" onclick="addTif()" type="button">添加tif图层</button>
+    <button class="addButton2" onclick="addShp()" type="button">添加shp图层</button>
+    <button class="removeButton1" onclick="removeTif()" type="button">移除tif图层</button>
+    <button class="removeButton2" onclick="removeShp()" type="button">移除shp图层</button>
+    
+    <script>
+        var viewer;
+
+        function init(){
+            //Viewer第一个参数容器就是需要上面的div容器承载
+            viewer = new Cesium.Viewer('cesiumContainer');
+            viewer.terrainProvider = Cesium.createWorldTerrain();
+            viewer.imageryLayers.remove(viewer.imageryLayers.get(0));
+            var provider1 = new Cesium.WebMapServiceImageryProvider({
+                url:'http://localhost:8080/geoserver/test/wms',
+                layers: 'test:dem',
+                parameters: {
+                service : 'WMS',
+                    format: 'image/png',
+                    srs: 'EPSG:4326',
+                    transparent: true,
+                }
+
+            });
+            viewer.imageryLayers.addImageryProvider(provider1); 
+
+            viewer.camera.setView({
+            destination:Cesium.Cartesian3.fromDegrees(103.8,33.2,60000.0),
+        })
+        }
+        
+        var tifLayer;
+        function addTif(){
+            var provider2 = new Cesium.WebMapServiceImageryProvider({
+                url:'http://localhost:8080/geoserver/test/wms',
+                layers: 'test:zerofive',
+                parameters: {
+                service : 'WMS',
+                    format: 'image/png',
+                    srs: 'EPSG:4326',
+                    transparent: true,
+                }
+
+            });
+            tifLayer = viewer.imageryLayers.addImageryProvider(provider2);
+        }
+
+        var shpLayer;
+        function addShp(){
+            var provider3 = new Cesium.WebMapServiceImageryProvider({
+                url:'http://localhost:8080/geoserver/test/wms',
+                layers: 'test:shp',
+                parameters: {
+                service : 'WMS',
+                    format: 'image/png',
+                    srs: 'EPSG:4326',
+                    transparent: true,
+                }
+
+            });
+            shpLayer = viewer.imageryLayers.addImageryProvider(provider3);
+        }
+
+        function removeTif(){
+            viewer.imageryLayers.remove(tifLayer);
+            viewer.imageryLayers.remove(shpLayer);
+            console.log(2);
+        }
+
+        function removeShp(){
+            viewer.imageryLayers.remove(shpLayer);
+            console.log(3);
+        }
+    </script>
+    
+</body>
+</html>

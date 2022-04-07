@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/Cesium/ol.css" type="text/css">
+    <style>
+
+    </style>
+    <script src="../lib/Cesium/ol.js" type="text/javascript"></script>
+    <title>OpenLayers map preview</title>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script type="module">
+        export default {
+            name: "TestOL2",
+            mounted:function(){
+    
+                var HOST =  this.HOST;   //解决Vue跨域问题，具体参考本简书《Vue跨域请求》
+                var layers = [
+                     new ol.layer.Tile({
+                      source: new ol.source.OSM()
+                    }),
+                    new ol.layer.Image({
+                        source: new ol.source.ImageWMS({
+                            url: HOST+'/geoserver/test/wms',
+                            params: {'LAYERS': 'test:jiuzaigou','TILED': true},
+                            ratio: 1,
+                            serverType: 'geoserver'
+                        })
+                    })
+                ];
+                var map = new ol.Map({
+                    layers: layers,
+                    target: 'map',
+                    view: new ol.View({
+                        center: ol.proj.fromLonLat([121.7, 39.9]),
+                        zoom: 10
+                    })
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

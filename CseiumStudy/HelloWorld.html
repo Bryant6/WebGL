@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cesium Start</title>
+    <script src="lib/Cesium/Cesium.js"></script>
+    <link href="lib/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+
+    <style>
+        html,
+        body{
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    <script>
+        //加载谷歌中国卫星影像，谷歌地球商业版，需要翻墙，报跨域资源请求错误
+        var url = "http://mt1.google.cn/vt/lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}&s=Gali";
+        var Google = new Cesium.UrlTemplateImageryProvider({url:url})
+
+        //Viewer第一个参数容器就是需要上面的div容器承载
+        var viewer = new Cesium.Viewer('cesiumContainer',{
+            // 将图层选择的控件关掉，才能添加其他影像数据
+            baselLayerPicker:false,
+            imageryProvider:Google
+        });
+    </script>
+</body>
+</html>

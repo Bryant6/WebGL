@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Three Light</title>
+    <script src="js/three.js">
+        /**
+         * 光源基类：THREE.Light
+         * THREE.Light ( hex ) 参数hex，接受一个16进制的颜色值
+         * Var redLight = new THREE.Light(0xFF0000);
+         *
+         * 1. 环境光AmbientLight
+         * THREE.AmbientLight( hex )
+         *
+         * 2. 点光源PointLight
+         * PointLight( color, intensity, distance )
+         *  Color：光的颜色
+         *  Intensity：光的强度，默认是1.0,就是说是100%强度的灯光，
+         *  distance：光的距离，从光源所在的位置，经过distance这段距离之后，光的强度将从Intensity衰减为0。 默认情况下，这个值为0.0，表示光源强度不衰减。
+         *
+         *  3. 聚光灯
+         *  THREE.SpotLight( hex, intensity, distance, angle, exponent )
+         *   Hex：聚光灯发出的颜色，如0xFFFFFF
+         *  Intensity：光源的强度，默认是1.0，如果为0.5，则强度是一半，意思是颜色会淡一些。和上面点光源一样。
+         *  Distance：光线的强度，从最大值衰减到0，需要的距离。 默认为0，表示光不衰减，如果非0，则表示从光源的位置到Distance的距离，光都在线性衰减。到离光源距离Distance时，光源强度为0.
+         *  Angle：聚光灯着色的角度，用弧度作为单位，这个角度是和光源的方向形成的角度。
+         *  exponent：光源模型中，衰减的一个参数，越大衰减约快。
+         *
+         *  4. 方向光（平行光）
+         *  THREE.DirectionalLight = function ( hex, intensity )
+         *   Hex：关系的颜色，用16进制表示
+         *   Intensity：光线的强度，默认为1。因为RGB的三个值均在0~255之间，不能反映出光照的强度变化，光照越强，物体表面就更明亮。它的取值范围是0到1。如果为0，表示光线基本没什么作用，那么物体就会显示为黑色。
+         */
+    </script>
+    <style type="text/css">
+        div#canvas-frame {
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            height: 600px;
+            background-color: #ffffff;
+        }
+
+    </style>
+    <script>
+        var renderer;
+        function initThree() {
+            width = document.getElementById('canvas-frame').clientWidth;
+            height = document.getElementById('canvas-frame').clientHeight;
+            renderer = new THREE.WebGLRenderer({
+                antialias : true
+            });
+            renderer.setSize(width, height);
+            document.getElementById('canvas-frame').appendChild(renderer.domElement);
+            renderer.setClearColor(0xFFFFFF, 1.0);
+        }
+
+        var camera;
+        function initCamera() {
+            camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+            camera.position.x = 600;
+            camera.position.y = 0;
+            camera.position.z = 600;
+            camera.up.x = 0;
+            camera.up.y = 1;
+            camera.up.z = 0;
+            camera.lookAt({
+                x : 0,
+                y : 0,
+                z : 0
+            });
+        }
+
+        var scene;
+        function initScene() {
+            scene = new THREE.Scene();
+        }
+
+        var light;
+        function initLight() {
+            light = new THREE.AmbientLight(0xFF0000);
+            light.position.set(100,100,200);
+            scene.add(light);
+
+            light = new THREE.DirectionalLight(0xFF0000,1);
+            // 位置不同，方向光作用于物体的面也不同，看到的物体各个面的颜色也不一样
+            light.position.set(0,0,1);
+            scene.add(light);
+        }
+
+        var cube;
+        function initObject() {
+            var geometry = new THREE.CubeGeometry( 200, 100, 50,4,4);
+            var material = new THREE.MeshLambertMaterial( { color:0xFFFFFF} );
+            var mesh = new THREE.Mesh( geometry,material);
+            mesh.position.set(0,0,0);
+            scene.add(mesh);
+
+            var geometry2 = new THREE.CubeGeometry( 200, 100, 50,4,4);
+            var material2 = new THREE.MeshLambertMaterial( { color:0xFFFFFF} );
+            var mesh2 = new THREE.Mesh( geometry2,material2);
+            mesh2.position.set(-300,0,0);
+            scene.add(mesh2);
+
+            var geometry3 = new THREE.CubeGeometry( 200, 100, 50,4,4);
+            var material3 = new THREE.MeshLambertMaterial( { color:0xFFFFFF} );
+            var mesh3 = new THREE.Mesh( geometry3,material3);
+            mesh3.position.set(0,-150,0);
+            scene.add(mesh3);
+
+            var mesh4 = new THREE.Mesh( geometry3,material3);
+            mesh4.position.set(0,150,0);
+            scene.add(mesh4);
+
+            var mesh5 = new THREE.Mesh( geometry3,material3);
+            mesh5.position.set(300,0,0);
+            scene.add(mesh5);
+
+            var mesh6 = new THREE.Mesh( geometry3,material3);
+            mesh6.position.set(0,0,-100);
+            scene.add(mesh6);
+        }
+
+        function threeStart() {
+            initThree();
+            initCamera();
+            initScene();
+            initLight();
+            initObject();
+            renderer.clear();
+            renderer.render(scene, camera);
+        }
+
+    </script>
+</head>
+
+<body onload="threeStart();">
+<div id="canvas-frame"></div>
+</body>
+</html>
