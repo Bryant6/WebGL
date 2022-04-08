@@ -101,16 +101,19 @@
 <body onload="init();">
     <div id="cesiumContainer" class="fullSize"></div>
     <div class="layui-btn-group">
+        <button id="addButton0" class="layui-btn layui-btn-lg" onclick="addDem()" type="button">显示DEM图层</button>
         <button id="addButton1" class="layui-btn layui-btn-lg" onclick="addTif()" type="button">显示遥感影像图层</button>
         <button id="addButton2" class="layui-btn layui-btn-lg" onclick="addShp()" type="button">显示SHP图层</button>shp图层</button>
         <button id="removeButton1" class="layui-btn layui-btn-danger layui-btn-lg" onclick="removeTif()" type="button">关闭遥感影像图层</button>
         <button id="removeButton2" class="layui-btn layui-btn-danger layui-btn-lg" onclick="removeShp()" type="button">关闭SHP图层</button>
+        <button id="removeButton0" class="layui-btn layui-btn-danger layui-btn-lg" onclick="removeDem()" type="button">关闭DEM图层</button>
     </div>
     
     
     <script>
         var viewer;
 
+        var demLayer;
         function init(){
             //Viewer第一个参数容器就是需要上面的div容器承载
             viewer = new Cesium.CesiumWidget('cesiumContainer',{
@@ -131,18 +134,18 @@
                 }
 
             });
-            viewer.imageryLayers.addImageryProvider(provider1); 
+            demLayer = viewer.imageryLayers.addImageryProvider(provider1); 
 
             viewer.camera.setView({
             destination:Cesium.Cartesian3.fromDegrees(103.8,33.2,60000.0),
         })
         }
         
-        var shpLayer;
-        function addShp(){
+        var demLayer;
+        function addDem(){
             var provider1 = new Cesium.WebMapServiceImageryProvider({
                 url:'http://localhost:8080/geoserver/test/wms',
-                layers: 'test:shp',
+                layers: 'test:dem',
                 parameters: {
                 service : 'WMS',
                     format: 'image/png',
@@ -151,7 +154,7 @@
                 }
 
             });
-            shpLayer = viewer.imageryLayers.addImageryProvider(provider1);
+            demLayer = viewer.imageryLayers.addImageryProvider(provider1);
         }
 
         
@@ -171,6 +174,21 @@
             tifLayer = viewer.imageryLayers.addImageryProvider(provider2);
         }
 
+        
+        function addShp(){
+            var provider3 = new Cesium.WebMapServiceImageryProvider({
+                url:'http://localhost:8080/geoserver/test/wms',
+                layers: 'test:shp',
+                parameters: {
+                service : 'WMS',
+                    format: 'image/png',
+                    srs: 'EPSG:4326',
+                    transparent: true,
+                }
+
+            });
+            shpLayer = viewer.imageryLayers.addImageryProvider(provider3);
+        }
 
         function removeTif(){
             viewer.imageryLayers.remove(tifLayer);
@@ -181,6 +199,11 @@
         function removeShp(){
             viewer.imageryLayers.remove(shpLayer);
             console.log(3);
+        }
+
+        function removeDem(){
+            viewer.imageryLayers.remove(demLayer);
+            console.log(4);
         }
     </script>
     

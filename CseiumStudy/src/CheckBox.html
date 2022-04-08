@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>九寨沟影像可视化</title>
+    <script src="../lib/Cesium/Cesium.js"></script>
+    <script src="../lib/js/layui.js"></script>
+    <script src="../lib/js/bootstrap.min.js"></script>
+    <script src="../lib/js/jquery-3.5.1.min.js"></script>
+    <link href="../lib/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <link href="../lib/css/layui.css" rel="stylesheet"/>
+    <link href="../lib/css/bootstrap.min.css" rel="stylesheet"></link>
+
+
+    <style>
+       
+        /* .form-check{
+            position: fixed;
+            top: 10px;
+            left: 60px;
+            background-color: rgb(16, 6, 153);
+        }
+        .form-check-label{
+            padding-left: 10px;
+            color: white;
+            height: 40px;
+            font-size: larger;
+            vertical-align: middle;
+            
+        }
+        .form-check-input{
+            width: 30px;
+            height: 30px;
+        } */
+        #panel{
+            position: fixed;
+            top: 10px;
+            left: 60px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body onload="init();">
+    <div id="cesiumContainer" class="fullSize"></div>
+    
+    
+    <div id="panel" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">显示图层</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" checked>
+                <label class="form-check-label">DEM Layers</label><br/>
+                <input class="form-check-input" type="checkbox" id="check2" name="option2" value="something">
+                <label class="form-check-label">Remote-sensing Layers</label><br/>
+                <input class="form-check-input" type="checkbox" id="check3" name="option3" value="something">
+                <label class="form-check-label">SHP Layers</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                显示图层
+            </div>
+            <div class="modal-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" checked>
+                    <label class="form-check-label">DEM Layers</label><br/>
+                    <input class="form-check-input" type="checkbox" id="check2" name="option2" value="something">
+                    <label class="form-check-label">Remote-sensing Layers</label><br/>
+                    <input class="form-check-input" type="checkbox" id="check3" name="option3" value="something">
+                    <label class="form-check-label">SHP Layers</label>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    
+    <script>
+        var panel = document.getElementById("panel");
+        panel.onmousedown=function(e){
+            var e = e || window.event;
+            
+            var X = e.clientX - this.offsetLeft;
+            var Y = e.clientY - this.offsetTop;
+            console.log(e.clientX)
+            console.log(this.offsetLeft)
+            console.log(X,Y)
+            window.onmousemove=function(event){
+                var ev=event||window.event
+                panel.style.left= ev.clientX - X + 'px'
+                panel.style.top= ev.clientY - Y + 'px'
+                panel.onmouseup=function(){
+                    console.log('松开鼠标')
+                    window.onmousemove = null;
+                }
+            }  
+        }
+    </script>
+    
+    <script>
+        var viewer;
+
+        var demLayer;
+        function init(){
+            //Viewer第一个参数容器就是需要上面的div容器承载
+            viewer = new Cesium.CesiumWidget('cesiumContainer',{
+                baselLayerPicker:false,
+                animation:false,
+                timeline:false
+            });
+            viewer.terrainProvider = Cesium.createWorldTerrain();
+            viewer.imageryLayers.remove(viewer.imageryLayers.get(0));
+            var provider1 = new Cesium.WebMapServiceImageryProvider({
+                url:'http://localhost:8080/geoserver/test/wms',
+                layers: 'test:dem',
+                parameters: {
+                service : 'WMS',
+                    format: 'image/png',
+                    srs: 'EPSG:4326',
+                    transparent: true,
+                }
+
+            });
+            demLayer = viewer.imageryLayers.addImageryProvider(provider1); 
+
+            viewer.camera.setView({
+                destination:Cesium.Cartesian3.fromDegrees(103.8,33.2,60000.0),
+            });
+        }
+
+        
+        var demLayer;
+        $(function(){
+            $("#check1").click(function () {
+                if (this.checked) {
+                    var provider1 = new Cesium.WebMapServiceImageryProvider({
+                        url:'http://localhost:8080/geoserver/test/wms',
+                        layers: 'test:dem',
+                        parameters: {
+                        service : 'WMS',
+                            format: 'image/png',
+                            srs: 'EPSG:4326',
+                            transparent: true,
+                        }
+                    });
+                    demLayer = viewer.imageryLayers.addImageryProvider(provider1);
+                }
+                else {
+                    viewer.imageryLayers.remove(demLayer);
+                }
+            });
+        });
+
+        var tifLayer;
+        $(function(){
+            $("#check2").click(function () {
+                if (this.checked) {
+                    var provider2 = new Cesium.WebMapServiceImageryProvider({
+                        url:'http://localhost:8080/geoserver/test/wms',
+                        layers: 'test:zerofive',
+                        parameters: {
+                        service : 'WMS',
+                            format: 'image/png',
+                            srs: 'EPSG:4326',
+                            transparent: true,
+                        }
+                    });
+                    tifLayer = viewer.imageryLayers.addImageryProvider(provider2);
+                }
+                else {
+                    viewer.imageryLayers.remove(tifLayer);
+                }
+            });
+        });
+
+        var shpLayer;
+        $(function(){
+            $("#check3").click(function () {
+                if (this.checked) {
+                    var provider2 = new Cesium.WebMapServiceImageryProvider({
+                        url:'http://localhost:8080/geoserver/test/wms',
+                        layers: 'test:shp',
+                        parameters: {
+                        service : 'WMS',
+                            format: 'image/png',
+                            srs: 'EPSG:4326',
+                            transparent: true,
+                        }
+                    });
+                    shpLayer = viewer.imageryLayers.addImageryProvider(provider2);
+                }
+                else {
+                    viewer.imageryLayers.remove(shpLayer);
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
